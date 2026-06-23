@@ -46,14 +46,15 @@ const nav = [
     ),
   },
   {
-    to: '/peso',
-    label: 'Peso',
+    to: '/alimentacao',
+    label: 'Alimentação',
     icon: (active: boolean) => (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
-          d="M3 20L7.5 9L12 14L16.5 6L21 20H3Z"
+          d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"
           stroke={active ? '#1B6B5E' : '#8A8A8A'}
           strokeWidth="1.8"
+          strokeLinecap="round"
           strokeLinejoin="round"
           fill={active ? '#E8F4F1' : 'none'}
         />
@@ -61,14 +62,13 @@ const nav = [
     ),
   },
   {
-    to: '/relatorio',
-    label: 'Relatório',
+    to: '/mais',
+    label: 'Mais',
     icon: (active: boolean) => (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <rect x="4" y="2" width="16" height="20" rx="2" stroke={active ? '#1B6B5E' : '#8A8A8A'} strokeWidth="1.8" fill={active ? '#E8F4F1' : 'none'} />
-        <line x1="8" y1="8" x2="16" y2="8" stroke={active ? '#1B6B5E' : '#8A8A8A'} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="8" y1="12" x2="16" y2="12" stroke={active ? '#1B6B5E' : '#8A8A8A'} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="8" y1="16" x2="12" y2="16" stroke={active ? '#1B6B5E' : '#8A8A8A'} strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="5" cy="12" r="1.5" fill={active ? '#1B6B5E' : '#8A8A8A'} />
+        <circle cx="12" cy="12" r="1.5" fill={active ? '#1B6B5E' : '#8A8A8A'} />
+        <circle cx="19" cy="12" r="1.5" fill={active ? '#1B6B5E' : '#8A8A8A'} />
       </svg>
     ),
   },

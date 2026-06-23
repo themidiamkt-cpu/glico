@@ -6,6 +6,9 @@ import Dashboard from './pages/Dashboard'
 import GlicemiaList from './pages/GlicemiaList'
 import GlicemiaForm from './pages/GlicemiaForm'
 import Treino from './pages/Treino'
+import Esteira from './pages/Esteira'
+import Alimentacao from './pages/Alimentacao'
+import Mais from './pages/Mais'
 import Peso from './pages/Peso'
 import Relatorio from './pages/Relatorio'
 
@@ -55,6 +58,9 @@ function AppRoutes() {
       <Route path="/glicemia" element={<RequireAuth><GlicemiaList /></RequireAuth>} />
       <Route path="/glicemia/nova" element={<RequireAuth><GlicemiaForm /></RequireAuth>} />
       <Route path="/treino" element={<RequireAuth><Treino /></RequireAuth>} />
+      <Route path="/esteira" element={<RequireAuth><Esteira /></RequireAuth>} />
+      <Route path="/alimentacao" element={<RequireAuth><Alimentacao /></RequireAuth>} />
+      <Route path="/mais" element={<RequireAuth><Mais /></RequireAuth>} />
       <Route path="/peso" element={<RequireAuth><Peso /></RequireAuth>} />
       <Route path="/relatorio" element={<RequireAuth><Relatorio /></RequireAuth>} />
 
