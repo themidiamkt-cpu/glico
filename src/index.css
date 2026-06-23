@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #F5F3F0;
+    color: #1A1A1A;
+    margin: 0;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+  }
+
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  input, select, textarea, button {
+    font-family: inherit;
+  }
+
+  /* Safe area insets for iPhone notch/home indicator */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-semibold py-3.5 px-6 rounded-2xl
+      active:scale-95 transition-all duration-150 disabled:opacity-50
+      disabled:cursor-not-allowed select-none w-full text-base;
+  }
+
+  .btn-secondary {
+    @apply bg-primary-50 text-primary font-semibold py-3.5 px-6 rounded-2xl
+      active:scale-95 transition-all duration-150 select-none w-full text-base;
+  }
+
+  .btn-ghost {
+    @apply text-muted font-medium py-3 px-4 rounded-2xl
+      active:scale-95 transition-all duration-150 select-none;
+  }
+
+  .card {
+    @apply bg-surface rounded-3xl shadow-card p-5;
+  }
+
+  .input-field {
+    @apply w-full bg-app border border-border rounded-2xl px-4 py-3.5
+      text-base text-gray-900 placeholder-muted
+      focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary
+      transition-colors;
+  }
+
+  .label {
+    @apply text-sm font-medium text-gray-700 mb-1.5 block;
+  }
+
+  .badge-success {
+    @apply bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  .badge-warning {
+    @apply bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  .badge-danger {
+    @apply bg-red-50 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  .badge-info {
+    @apply bg-primary-50 text-primary text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  .toggle-row {
+    @apply flex items-center justify-between py-4 border-b border-border last:border-0;
+  }
+}
+
+/* Smooth page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E0D8;
+  border-radius: 2px;
+}
