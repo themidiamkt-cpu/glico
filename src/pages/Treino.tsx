@@ -7,12 +7,11 @@ import Layout from '../components/Layout'
 import type { WorkoutLog, ExerciseLog, TreinoTipo } from '../types/database'
 import { treinoLabels } from '../types/database'
 import {
-  WEEKLY_SCHEDULE,
   WORKOUT_TEMPLATES,
   WORKOUT_NAMES,
-  getTodayTreinos,
+  TREINO_SEQUENCE,
   getWeekFaseInfo,
-  DAY_NAMES,
+  getNextForca,
   DAY_NAMES_FULL,
 } from '../lib/workoutProgram'
 
@@ -227,9 +226,12 @@ export default function Treino() {
   })
   const [editingWeek, setEditingWeek] = useState(false)
 
-  const todayTreinos = getTodayTreinos()
   const { fase, descricao: faseDescricao } = getWeekFaseInfo(currentWeek)
   const dow = new Date().getDay()
+
+  // Last strength workout done (to suggest next)
+  const lastForca = logs.find(l => l.treino && l.treino !== 'corrida')?.treino ?? null
+  const suggestedForca = getNextForca(lastForca as TreinoTipo | null)
 
   const saveWeek = (w: number) => {
     const clamped = Math.min(12, Math.max(1, w))
@@ -330,10 +332,10 @@ export default function Treino() {
 
   return (
     <Layout title="Treino">
-      {/* ---- Today's workout recommendation ---- */}
+      {/* ---- Iniciar treino ---- */}
       <div className="card mb-4">
-        {/* Week + phase header */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Semana + fase */}
+        <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-muted text-xs font-medium uppercase tracking-wide">Programa 12 semanas</p>
             <div className="flex items-center gap-2 mt-1">
@@ -358,74 +360,84 @@ export default function Treino() {
             </div>
             <p className="text-xs text-muted mt-0.5">{faseDescricao}</p>
           </div>
-          <div className="text-right">
-            <span className={`badge-info text-xs px-3 py-1 capitalize`}>{fase.replace('_', ' ')}</span>
-            <p className="text-xs text-muted mt-1">{currentWeek}/12</p>
-          </div>
+          <span className="badge-info text-xs px-3 py-1 capitalize">{fase.replace('_', ' ')}</span>
         </div>
 
-        {/* Progress bar */}
         <div className="h-1.5 bg-border rounded-full mb-5">
           <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(currentWeek / 12) * 100}%` }} />
         </div>
 
-        {/* Today */}
-        <div className="mb-4">
-          <p className="text-muted text-xs font-medium uppercase tracking-wide mb-2">
-            Hoje — {DAY_NAMES_FULL[dow]}
-          </p>
-          {todayTreinos.length > 0 ? (
-            <div className="space-y-2">
-              {todayTreinos.map(treino => (
-                <div key={treino} className="flex items-center justify-between bg-primary-50 rounded-2xl p-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">
-                        {treino === 'corrida' ? '🏃' : treino}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">{treinoLabels[treino]}</p>
-                      <p className="text-xs text-muted">{WORKOUT_NAMES[treino]}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => startWorkout(treino)}
-                    disabled={startingTreino === treino}
-                    className="bg-primary text-white text-xs font-semibold px-4 py-2.5 rounded-xl active:scale-95 transition-all disabled:opacity-50"
-                  >
-                    {startingTreino === treino ? '...' : 'Iniciar'}
-                  </button>
+        {/* Hoje */}
+        <p className="text-muted text-xs font-medium uppercase tracking-wide mb-3">
+          Hoje — {DAY_NAMES_FULL[dow]}
+        </p>
+
+        {/* Sugestão: próximo treino de força + corrida */}
+        <div className="space-y-2 mb-4">
+          {/* Força sugerida */}
+          <div className="flex items-center justify-between bg-primary-50 rounded-2xl p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold">{suggestedForca}</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-semibold text-gray-900 text-sm">Treino {suggestedForca}</p>
+                  <span className="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-full">sugerido</span>
                 </div>
-              ))}
+                <p className="text-xs text-muted">{WORKOUT_NAMES[suggestedForca]}</p>
+              </div>
             </div>
-          ) : (
-            <div className="bg-border/40 rounded-2xl p-4 text-center">
-              <p className="text-muted text-sm">Dia de descanso</p>
+            <button
+              onClick={() => startWorkout(suggestedForca)}
+              disabled={!!startingTreino}
+              className="bg-primary text-white text-xs font-semibold px-4 py-2.5 rounded-xl active:scale-95 transition-all disabled:opacity-50"
+            >
+              {startingTreino === suggestedForca ? '...' : 'Iniciar'}
+            </button>
+          </div>
+
+          {/* Corrida sempre disponível */}
+          <div className="flex items-center justify-between bg-app rounded-2xl p-3 border border-border">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-border rounded-xl flex items-center justify-center text-lg">🏃</div>
+              <div>
+                <p className="font-semibold text-gray-900 text-sm">Corrida</p>
+                <p className="text-xs text-muted">Esteira ou ao ar livre</p>
+              </div>
             </div>
-          )}
+            <button
+              onClick={() => startWorkout('corrida')}
+              disabled={!!startingTreino}
+              className="border border-primary text-primary text-xs font-semibold px-4 py-2.5 rounded-xl active:scale-95 transition-all disabled:opacity-50"
+            >
+              {startingTreino === 'corrida' ? '...' : 'Iniciar'}
+            </button>
+          </div>
         </div>
 
-        {/* Weekly grid */}
-        <div className="grid grid-cols-7 gap-1">
-          {[0,1,2,3,4,5,6].map(d => {
-            const treinos = WEEKLY_SCHEDULE[d] ?? []
-            const isToday = d === dow
-            return (
-              <div key={d} className={`rounded-xl p-1.5 text-center ${isToday ? 'bg-primary' : 'bg-app'}`}>
-                <p className={`text-[10px] font-medium mb-1 ${isToday ? 'text-white/70' : 'text-muted'}`}>{DAY_NAMES[d]}</p>
-                {treinos.length > 0 ? (
-                  treinos.map(t => (
-                    <p key={t} className={`text-[11px] font-bold leading-tight ${isToday ? 'text-white' : 'text-primary'}`}>
-                      {t === 'corrida' ? '🏃' : t}
-                    </p>
-                  ))
-                ) : (
-                  <p className="text-[11px] text-muted">-</p>
-                )}
-              </div>
-            )
-          })}
+        {/* Escolha livre — todos os treinos */}
+        <div>
+          <p className="text-muted text-xs font-medium uppercase tracking-wide mb-2">Ou escolha outro</p>
+          <div className="grid grid-cols-5 gap-2">
+            {TREINO_SEQUENCE.map(t => (
+              <button
+                key={t}
+                onClick={() => startWorkout(t)}
+                disabled={!!startingTreino}
+                className={`py-3 rounded-2xl flex flex-col items-center gap-1 active:scale-95 transition-all disabled:opacity-50 ${
+                  t === suggestedForca
+                    ? 'bg-primary text-white'
+                    : 'bg-app border border-border text-gray-700'
+                }`}
+              >
+                <span className={`text-base font-bold ${t === suggestedForca ? 'text-white' : 'text-primary'}`}>{t}</span>
+                <span className={`text-[9px] font-medium leading-tight text-center px-1 ${t === suggestedForca ? 'text-white/80' : 'text-muted'}`}>
+                  {WORKOUT_NAMES[t].split(' + ')[0]}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

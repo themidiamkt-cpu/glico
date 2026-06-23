@@ -2,18 +2,24 @@ import type { TreinoTipo, TreinoFase } from '../types/database'
 
 // =============================================
 // Programa híbrido 12 semanas
-// 5x musculação (A-E) + 3x corrida
+// Seg-Sex: musculação (A→E em sequência) + corrida
+// Sáb/Dom: descanso (ou livre)
+// Sem travamento de dia — você escolhe qual treino iniciar
 // =============================================
 
+// Grade de referência: seg-sex tem força + corrida, fim de semana descansa
 export const WEEKLY_SCHEDULE: Record<number, TreinoTipo[]> = {
-  0: ['corrida'],     // Domingo
-  1: ['A'],           // Segunda
-  2: ['B'],           // Terça
-  3: ['corrida'],     // Quarta
-  4: ['C'],           // Quinta
-  5: ['D'],           // Sexta
-  6: ['E', 'corrida'], // Sábado (força + corrida leve)
+  0: [],              // Domingo - descanso
+  1: ['A', 'corrida'], // Segunda
+  2: ['B', 'corrida'], // Terça
+  3: ['C', 'corrida'], // Quarta
+  4: ['D', 'corrida'], // Quinta
+  5: ['E', 'corrida'], // Sexta
+  6: [],              // Sábado - descanso
 }
+
+// Sequência dos treinos de força (para sugerir "próximo treino")
+export const TREINO_SEQUENCE: TreinoTipo[] = ['A', 'B', 'C', 'D', 'E']
 
 export interface ExerciseTemplate {
   nome: string
@@ -93,6 +99,13 @@ export const WORKOUT_NAMES: Record<TreinoTipo, string> = {
 export function getTodayTreinos(): TreinoTipo[] {
   const dow = new Date().getDay()
   return WEEKLY_SCHEDULE[dow] ?? []
+}
+
+// Dado o último treino de força feito, sugere o próximo na sequência A→B→C→D→E→A
+export function getNextForca(lastTreino: TreinoTipo | null): TreinoTipo {
+  if (!lastTreino || !TREINO_SEQUENCE.includes(lastTreino)) return 'A'
+  const idx = TREINO_SEQUENCE.indexOf(lastTreino)
+  return TREINO_SEQUENCE[(idx + 1) % TREINO_SEQUENCE.length]
 }
 
 export function getWeekFaseInfo(semana: number): { fase: TreinoFase; descricao: string } {
